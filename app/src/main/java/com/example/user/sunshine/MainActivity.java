@@ -1,13 +1,18 @@
 package com.example.user.sunshine;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -22,9 +27,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     ArrayAdapter<String> mForecastAdapter;
@@ -35,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         /* dummy weather forecast data */
-        String[] forecastArray = {
+       /*String[] forecastArray = {
                 "Today - Sunny - 88/63",
                 "Tomorrow - Foggy - 70/40",
                 "Wed - Cloudy - 72/63",
@@ -46,12 +49,27 @@ public class MainActivity extends AppCompatActivity {
         };
 
         //setting list with dummy data array.
-        List<String> weekForecast = new LinkedList<String>(Arrays.asList(forecastArray));
-
+        List<String> weekForecast = new ArrayList<String>(Arrays.asList(forecastArray));
+        */
         //Adapter to view sourse list to listView.
-        mForecastAdapter = new ArrayAdapter<String>(this,R.layout.list_item_forecast,R.id.list_item_forecast_textview,weekForecast);
+        mForecastAdapter = new ArrayAdapter<String>(this,
+                R.layout.list_item_forecast,
+                R.id.list_item_forecast_textview,
+                new ArrayList<String>());
         mListView = (ListView) findViewById(R.id.listview_forecast);
         mListView.setAdapter(mForecastAdapter);
+        updateWeather();
+
+        //on tapping list item show list detail.
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String forcast = mForecastAdapter.getItem(position);
+                Intent intent = new Intent(MainActivity.this,DetailActivity.class);
+                intent.putExtra(Intent.EXTRA_TEXT,forcast);
+                startActivity(intent);
+            }
+        });
 
 
     }
@@ -71,12 +89,20 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId())
         {
             case R.id.action_refresh:
-                FetchWeatherTask weatherTask = new FetchWeatherTask();
-                weatherTask.execute("Jaipur,IN");
+                updateWeather();
                 return true;
-
+            case R.id.settings:
+                startActivity(new Intent(MainActivity.this,SettingsActivity.class));
+                return true;
         }
         return false;
+    }
+
+    private void updateWeather() {
+        FetchWeatherTask weatherTask = new FetchWeatherTask();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String location = prefs.getString(getString(R.string.pref_location_key),getString(R.string.pref_location_default));
+        weatherTask.execute(location);
     }
 
     public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
@@ -96,7 +122,13 @@ public class MainActivity extends AppCompatActivity {
         /**
          * Prepare the weather high/lows for presentation.
          */
-        private String formatHighLows(double high, double low) {
+        private String formatHighLows(double high, double low,String unitType) {
+            if (unitType.equals(getString(R.string.pref_units_imperial))) {
+                high = (high * 1.8) + 32;
+                low = (low * 1.8) + 32;
+            } else if (!unitType.equals(getString(R.string.pref_units_metric))) {
+                Log.d(TAG, "Unit type not found: " + unitType);
+            }
             // For presentation, assume the user doesn't care about tenths of a degree.
             long roundedHigh = Math.round(high);
             long roundedLow = Math.round(low);
@@ -128,6 +160,17 @@ public class MainActivity extends AppCompatActivity {
             JSONArray weatherArray = forecastJson.getJSONArray(OWM_LIST);
 
             String[] resultStrs = new String[numDays];
+
+            // Data is fetched in Celsius by default.
+            // If user prefers to see in Fahrenheit, convert the values here.
+             // We do this rather than fetching in Fahrenheit so that the user can
+            // change this option without us having to re-fetch the data once
+            // we start storing the values in a database.
+            SharedPreferences sharedPrefs =
+            PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+            String unitType = sharedPrefs.getString(
+                    getString(R.string.pref_units_key),
+                    getString(R.string.pref_units_metric));
             for(int i = 0; i < weatherArray.length(); i++) {
                 // For now, using the format "Day, description, hi/low"
                 String day;
@@ -155,7 +198,7 @@ public class MainActivity extends AppCompatActivity {
                 double high = temperatureObject.getDouble(OWM_MAX);
                 double low = temperatureObject.getDouble(OWM_MIN);
 
-                highAndLow = formatHighLows(high, low);
+                highAndLow = formatHighLows(high, low, unitType);
                 resultStrs[i] = day + " - " + description + " - " + highAndLow;
             }
             /*
@@ -172,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
             // so that they can be closed in the finally block.
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
-            String api_key ="xxxxxxxxxxxxxxx"; //TODO: paste your open weather map api_key.
+            String api_key =BuildConfig.OPEN_WEATHER_MAP_API_KEY;
             // Will contain the raw JSON response as a string.
             String forecastJsonStr = null;
             String format = "json";
@@ -203,7 +246,7 @@ public class MainActivity extends AppCompatActivity {
                 URL url = new URL(buildUri.toString());
 
                 //for debug use;
-                Log.d(TAG,"BuildUri : "+buildUri.toString());
+                //Log.d(TAG,"BuildUri : "+buildUri.toString());
 
 
                 // Create the request to OpenWeatherMap, and open the connection

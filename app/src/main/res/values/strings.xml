@@ -1,4 +1,24 @@
 <resources>
     <string name="app_name">Sunshine</string>
     <string name="action_refresh">Refersh</string>
+    <string name="settings_title">Settings</string>
+    <string name="details_lable">Details</string>
+    <string name="pref_location_lable">Location</string>
+    <string name="pref_location_key">location</string>
+    <string name="pref_location_default">Jaipur,IN</string>
+    <string name="pref_units_key">units</string>
+    <string name="pref_units_label">Temperature Units</string>
+    <string name="pref_units_metric">Metric</string>
+    <string name="pref_units_label_metric">Metric</string>
+    <string name="pref_units_label_imperial">Imperial</string>
+    <string name="pref_units_imperial">imperial</string>
+
+    <array name="pref_units_options">
+        <item>@string/pref_units_label_metric</item>
+        <item>@string/pref_units_label_imperial</item>
+    </array>
+    <array name="pref_units_values">
+        <item>@string/pref_units_metric</item>
+        <item>@string/pref_units_imperial</item>
+    </array>
 </resources>
