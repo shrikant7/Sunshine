@@ -28,6 +28,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     ArrayAdapter<String> mForecastAdapter;
@@ -38,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         /* dummy weather forecast data */
-       /*String[] forecastArray = {
+       String[] forecastArray = {
                 "Today - Sunny - 88/63",
                 "Tomorrow - Foggy - 70/40",
                 "Wed - Cloudy - 72/63",
@@ -50,15 +52,15 @@ public class MainActivity extends AppCompatActivity {
 
         //setting list with dummy data array.
         List<String> weekForecast = new ArrayList<String>(Arrays.asList(forecastArray));
-        */
-        //Adapter to view sourse list to listView.
+
+        //Adapter to view source list to listView.
         mForecastAdapter = new ArrayAdapter<String>(this,
                 R.layout.list_item_forecast,
                 R.id.list_item_forecast_textview,
-                new ArrayList<String>());
+                weekForecast);
         mListView = (ListView) findViewById(R.id.listview_forecast);
         mListView.setAdapter(mForecastAdapter);
-        updateWeather();
+        //updateWeather();
 
         //on tapping list item show list detail.
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
