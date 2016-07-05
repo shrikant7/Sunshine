@@ -109,14 +109,11 @@ public class WeatherProvider extends ContentProvider {
     }
 
     /*
-        Students: Here is where you need to create the UriMatcher. This UriMatcher will
-        match each URI to the WEATHER, WEATHER_WITH_LOCATION, WEATHER_WITH_LOCATION_AND_DATE,
-        and LOCATION integer constants defined above.  You can test this by uncommenting the
-        testUriMatcher test within TestUriMatcher.
+        UriMatcher will match each URI to the WEATHER, WEATHER_WITH_LOCATION,
+        WEATHER_WITH_LOCATION_AND_DATE, and LOCATION integer constants defined above.
+        we can test this by testUriMatcher test within TestUriMatcher.
      */
     static UriMatcher buildUriMatcher() {
-        // I know what you're thinking.  Why create a UriMatcher when you can use regular
-        // expressions instead?  Because you're not crazy, that's why.
 
         // All paths added to the UriMatcher have a corresponding code to return when a match is
         // found.  The code passed into the constructor represents the code to return for the root
@@ -134,8 +131,7 @@ public class WeatherProvider extends ContentProvider {
     }
 
     /*
-        Students: We've coded this for you.  We just create a new WeatherDbHelper for later use
-        here.
+        just create a new WeatherDbHelper for later use here.
      */
     @Override
     public boolean onCreate() {
@@ -144,9 +140,7 @@ public class WeatherProvider extends ContentProvider {
     }
 
     /*
-        Students: Here's where you'll code the getType function that uses the UriMatcher.  You can
-        test this by uncommenting testGetType in TestProvider.
-
+        getType function that uses the UriMatcher.  we can test this by testGetType in TestProvider.
      */
     @Override
     public String getType(Uri uri) {
@@ -155,7 +149,6 @@ public class WeatherProvider extends ContentProvider {
         final int match = sUriMatcher.match(uri);
 
         switch (match) {
-            // Student: Uncomment and fill out these two cases
             case WEATHER_WITH_LOCATION_AND_DATE:
                 return WeatherContract.WeatherEntry.CONTENT_ITEM_TYPE;
             case WEATHER_WITH_LOCATION:
@@ -222,7 +215,7 @@ public class WeatherProvider extends ContentProvider {
     }
 
     /*
-        Student: Add the ability to insert Locations to the implementation of this function.
+        added ability to insert Locations to the implementation of this function.
      */
     @Override
     public Uri insert(Uri uri, ContentValues values) {
@@ -285,7 +278,7 @@ public class WeatherProvider extends ContentProvider {
         // normalize the date value
         if (values.containsKey(WeatherContract.WeatherEntry.COLUMN_DATE)) {
             long dateValue = values.getAsLong(WeatherContract.WeatherEntry.COLUMN_DATE);
-            values.put(WeatherContract.WeatherEntry.COLUMN_DATE, WeatherContract.normalizeDate(dateValue));
+            values.put(WeatherContract.WeatherEntry.COLUMN_DATE, dateValue);
         }
     }
 
@@ -342,8 +335,8 @@ public class WeatherProvider extends ContentProvider {
         }
     }
 
-    // You do not need to call this method. This is a method specifically to assist the testing
-    // framework in running smoothly. You can read more at:
+    // no need to call this method. This is a method specifically to assist the testing
+    // framework in running smoothly. can read more at:
     // http://developer.android.com/reference/android/content/ContentProvider.html#shutdown()
     @Override
     @TargetApi(11)

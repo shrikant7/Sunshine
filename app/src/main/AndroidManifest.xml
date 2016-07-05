@@ -23,6 +23,9 @@
         <activity android:name=".SettingsActivity"
             android:label="@string/settings_title"
             android:parentActivityName=".MainActivity"/>
+        <provider
+            android:authorities="com.example.user.sunshine"
+            android:name=".data.WeatherProvider" />
     </application>
 
 </manifest>

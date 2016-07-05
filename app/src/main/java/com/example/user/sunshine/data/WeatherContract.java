@@ -19,7 +19,7 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.net.Uri;
 import android.provider.BaseColumns;
-import android.text.format.Time;
+import android.util.Log;
 
 /**
  * Defines table and column names for the weather database.
@@ -30,15 +30,15 @@ public class WeatherContract {
     // relationship between a domain name and its website.  A convenient string to use for the
     // content authority is the package name for the app, which is guaranteed to be unique on the
     // device.
-    public static final String CONTENT_AUTHORITY = "com.example.android.sunshine.app";
+    public static final String CONTENT_AUTHORITY = "com.example.user.sunshine";
 
     // Use CONTENT_AUTHORITY to create the base of all URI's which apps will use to contact
     // the content provider.
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 
     // Possible paths (appended to base content URI for possible URI's)
-    // For instance, content://com.example.android.sunshine.app/weather/ is a valid path for
-    // looking at weather data. content://com.example.android.sunshine.app/givemeroot/ will fail,
+    // For instance, content://com.example.user.sunshine/weather/ is a valid path for
+    // looking at weather data. content://com.example.user.sunshine/givemeroot/ will fail,
     // as the ContentProvider hasn't been given any information on what to do with "givemeroot".
     // At least, let's hope not.  Don't be that dev, reader.  Don't be that dev.
     public static final String PATH_WEATHER = "weather";
@@ -46,13 +46,6 @@ public class WeatherContract {
 
     // To make it easy to query for the exact date, we normalize all dates that go into
     // the database to the start of the the Julian day at UTC.
-    public static long normalizeDate(long startDate) {
-        // normalize the start date to the beginning of the (UTC) day
-        Time time = new Time();
-        time.set(startDate);
-        int julianDay = Time.getJulianDay(startDate, time.gmtoff);
-        return time.setJulianDay(julianDay);
-    }
 
     /* Inner class that defines the table contents of the location table */
     public static final class LocationEntry implements BaseColumns {
@@ -131,7 +124,7 @@ public class WeatherContract {
         }
 
         /*
-            Student: This is the buildWeatherLocation function you filled in.
+             This is the buildWeatherLocation function you filled in.
          */
         public static Uri buildWeatherLocation(String locationSetting) {
             return CONTENT_URI.buildUpon().appendPath(locationSetting).build();
@@ -139,14 +132,17 @@ public class WeatherContract {
 
         public static Uri buildWeatherLocationWithStartDate(
                 String locationSetting, long startDate) {
-            long normalizedDate = normalizeDate(startDate);
+
+            Log.d("LocationWithStartDate: ",(CONTENT_URI.buildUpon().appendPath(locationSetting)
+                    .appendQueryParameter(COLUMN_DATE, Long.toString(startDate)).build()).toString());
+
             return CONTENT_URI.buildUpon().appendPath(locationSetting)
-                    .appendQueryParameter(COLUMN_DATE, Long.toString(normalizedDate)).build();
+                    .appendQueryParameter(COLUMN_DATE, Long.toString(startDate)).build();
         }
 
         public static Uri buildWeatherLocationWithDate(String locationSetting, long date) {
             return CONTENT_URI.buildUpon().appendPath(locationSetting)
-                    .appendPath(Long.toString(normalizeDate(date))).build();
+                    .appendPath(Long.toString(date)).build();
         }
 
         public static String getLocationSettingFromUri(Uri uri) {

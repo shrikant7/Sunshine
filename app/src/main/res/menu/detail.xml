@@ -5,5 +5,6 @@
     <item android:title="@string/settings_title"
         android:id="@+id/settings" />
     <item android:id="@+id/action_share"
-           android:title="@string/action_share"  />
+           android:title="@string/action_share"
+        android:actionProviderClass="android.widget.ShareActionProvider"/>
 </menu>

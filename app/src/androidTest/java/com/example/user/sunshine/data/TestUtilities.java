@@ -16,9 +16,8 @@ import java.util.Map;
 import java.util.Set;
 
 /*
-    Students: These are functions and some test data to make it easier to test your database and
-    Content Provider.  Note that you'll want your WeatherContract class to exactly match the one
-    in our solution to use these as-given.
+    functions and some test data to make it easier to test our database and
+    Content Provider.
  */
 public class TestUtilities extends AndroidTestCase {
     static final String TEST_LOCATION = "99705";
@@ -44,7 +43,7 @@ public class TestUtilities extends AndroidTestCase {
     }
 
     /*
-        Students: Use this to create some default weather values for your database tests.
+        Used this to create some default weather values for database tests.
      */
     static ContentValues createWeatherValues(long locationRowId) {
         ContentValues weatherValues = new ContentValues();
@@ -63,8 +62,7 @@ public class TestUtilities extends AndroidTestCase {
     }
 
     /*
-        Students: You can uncomment this helper function once you have finished creating the
-        LocationEntry part of the WeatherContract.
+        After finished creating the LocationEntry part of the WeatherContract, set contentValues.
      */
     static ContentValues createNorthPoleLocationValues() {
         // Create a new map of values, where column names are the keys
@@ -78,8 +76,7 @@ public class TestUtilities extends AndroidTestCase {
     }
 
     /*
-        Students: You can uncomment this function once you have finished creating the
-        LocationEntry part of the WeatherContract as well as the WeatherDbHelper.
+        inserting north pole location test values.
      */
     static long insertNorthPoleLocationValues(Context context) {
         // insert our test records into the database
@@ -97,8 +94,8 @@ public class TestUtilities extends AndroidTestCase {
     }
 
     /*
-        Students: The functions we provide inside of TestProvider use this utility class to test
-        the ContentObserver callbacks using the PollingCheck class that we grabbed from the Android
+        functions inside of TestProvider use this utility class to test the ContentObserver
+        callbacks using the PollingCheck class that we grabbed from the Android
         CTS tests.
 
         Note that this only tests that the onChange function is called; it does not test that the
@@ -131,7 +128,7 @@ public class TestUtilities extends AndroidTestCase {
         }
 
         public void waitForNotificationOrFail() {
-            // Note: The PollingCheck class is taken from the Android CTS (Compatibility Test Suite).
+            // The PollingCheck class is taken from the Android CTS (Compatibility Test Suite).
             // It's useful to look at the Android CTS source for ideas on how to test your Android
             // applications.  The reason that PollingCheck works is that, by default, the JUnit
             // testing framework is not running on the main Android application thread.
