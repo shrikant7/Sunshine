@@ -1,26 +1,24 @@
 package com.example.user.sunshine;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
+import com.example.user.sunshine.data.WeatherContract;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    ArrayAdapter<String> mForecastAdapter;
+    ForecastAdapter mForecastAdapter;
     ListView mListView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,26 +40,28 @@ public class MainActivity extends AppCompatActivity {
         List<String> weekForecast = new ArrayList<String>(Arrays.asList(forecastArray));
 
         //Adapter to view source list to listView.
-        mForecastAdapter = new ArrayAdapter<String>(this,
-                R.layout.list_item_forecast,
-                R.id.list_item_forecast_textview,
-                new ArrayList<String>());                            // EMPTY ArrayList.
-        mListView = (ListView) findViewById(R.id.listview_forecast);
-        mListView.setAdapter(mForecastAdapter);
-        updateWeather();
+//        mForecastAdapter = new ArrayAdapter<String>(this,
+//                R.layout.list_item_forecast,
+//                R.id.list_item_forecast_textview,
+//                weekForecast);                            // EMPTY ArrayList.
+//        mListView = (ListView) findViewById(R.id.listview_forecast);
+//        mListView.setAdapter(mForecastAdapter);
+//          updateWeather();
 
-        //on tapping list item show list detail.
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String forcast = mForecastAdapter.getItem(position);
-                Intent intent = new Intent(MainActivity.this,DetailActivity.class);
-                intent.putExtra(Intent.EXTRA_TEXT,forcast);
-                startActivity(intent);
-            }
-        });
+        String locationSetting = Utility.getPreferredLocation(this);
 
+        String sortOrder = WeatherContract.WeatherEntry.COLUMN_DATE + " ASC";
+        Uri weatherForLocationUri = WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(
+                locationSetting, System.currentTimeMillis());
+        Cursor cur = this.getContentResolver().query(weatherForLocationUri,null, null, null, sortOrder);
+        // The CursorAdapter will take data from our cursor and populate the ListView
+        // However, we cannot use FLAG_AUTO_REQUERY since it is deprecated, so we will end
+        // up with an empty list the first time we run.
+        mForecastAdapter = new ForecastAdapter(this, cur, 0);
 
+        // Get a reference to the ListView, and attach this adapter to it.
+        ListView listView = (ListView) findViewById(R.id.listview_forecast);
+        listView.setAdapter(mForecastAdapter);
     }
 
     @Override
@@ -91,14 +91,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void openPreferredLocationInMap() {
         String LOG_TAG = "openPreferredLocationInMap";
-        SharedPreferences sharedPrefs =
-                PreferenceManager.getDefaultSharedPreferences(this);
-        String location = sharedPrefs.getString(
-                getString(R.string.pref_location_key),
-                getString(R.string.pref_location_default));
-
-
-
+        String location = Utility.getPreferredLocation(this);
         // Using the URI scheme for showing a location found on a map.  This super-handy
         // intent can is detailed in the "Common Intents" page of Android's developer site:
         // http://developer.android.com/guide/components/intents-common.html#Maps
@@ -118,9 +111,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void updateWeather() {
-        FetchWeatherTask weatherTask = new FetchWeatherTask(this,mForecastAdapter);
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String location = prefs.getString(getString(R.string.pref_location_key),getString(R.string.pref_location_default));
+        FetchWeatherTask weatherTask = new FetchWeatherTask(this);
+        String location = Utility.getPreferredLocation(this);
         weatherTask.execute(location);
     }
 }

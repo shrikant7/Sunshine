@@ -13,17 +13,17 @@ import android.widget.TextView;
 
 public class DetailActivity extends AppCompatActivity {
     TextView textView;
-    String forecast;
+    //String forecast;
     private static final String LOG_TAG = DetailActivity.class.getSimpleName();
     private static final String FORECAST_SHARE_HASHTAG = " #SunshineApp";
-    private String mForecastStr;
+    private String mForecastStr="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
         textView =(TextView) findViewById(R.id.detailText);
-        forecast = getIntent().getStringExtra(Intent.EXTRA_TEXT);
-        textView.setText(forecast);
+        mForecastStr = getIntent().getStringExtra(Intent.EXTRA_TEXT);
+        textView.setText(mForecastStr);
 
     }
 
@@ -51,7 +51,7 @@ public class DetailActivity extends AppCompatActivity {
     }
     private Intent createShareForecastIntent() {
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+        //shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
         shareIntent.setType("text/plain");
         shareIntent.putExtra(Intent.EXTRA_TEXT,
                 mForecastStr + FORECAST_SHARE_HASHTAG);
