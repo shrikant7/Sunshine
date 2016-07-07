@@ -22,8 +22,10 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
         textView =(TextView) findViewById(R.id.detailText);
-        mForecastStr = getIntent().getStringExtra(Intent.EXTRA_TEXT);
-        textView.setText(mForecastStr);
+        if(getIntent()!=null && getIntent().hasExtra(Intent.EXTRA_TEXT))
+            mForecastStr = getIntent().getStringExtra(Intent.EXTRA_TEXT);
+        if(mForecastStr!=null)
+            textView.setText(mForecastStr);
 
     }
 
