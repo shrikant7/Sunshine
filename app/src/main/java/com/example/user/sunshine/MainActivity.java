@@ -18,13 +18,11 @@ import android.widget.ListView;
 
 import com.example.user.sunshine.data.WeatherContract;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     ForecastAdapter mForecastAdapter;
     ListView mListView;
+    private String mLocation;
+    private String mTempUnit;
     private static final int FORECAST_LOADER = 0;
     // For the forecast view we're showing only a small subset of the stored data.
     // Specify the columns we need.
@@ -59,31 +57,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     static final int COL_COORD_LONG = 8;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mLocation = Utility.getPreferredLocation(this);
+        mTempUnit = Utility.getPreferredUnits(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getLoaderManager().initLoader(FORECAST_LOADER, null, this);
-
-        /* dummy weather forecast data */
-       String[] forecastArray = {
-                "Today - Sunny - 88/63",
-                "Tomorrow - Foggy - 70/40",
-                "Wed - Cloudy - 72/63",
-                "Thurs - Asteroids - 75/65",
-                "Fri - Heavy Rain - 65/56",
-                "Sat - HELP TRAPPED IN WEATHERSTATION",
-                "Sun - Sunny - 80/68"
-        };
-        //setting list with dummy data array.
-        List<String> weekForecast = new ArrayList<String>(Arrays.asList(forecastArray));
-
-        //Adapter to view source list to listView.
-//        mForecastAdapter = new ArrayAdapter<String>(this,
-//                R.layout.list_item_forecast,
-//                R.id.list_item_forecast_textview,
-//                weekForecast);                            // EMPTY ArrayList.
-//        mListView = (ListView) findViewById(R.id.listview_forecast);
-//        mListView.setAdapter(mForecastAdapter);
-//          updateWeather();
 
         mForecastAdapter = new ForecastAdapter(this, null, 0);
         // Get a reference to the ListView, and attach this adapter to it.
@@ -153,11 +131,32 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         }
     }
 
-
     private void updateWeather() {
         FetchWeatherTask weatherTask = new FetchWeatherTask(this);
         String location = Utility.getPreferredLocation(this);
         weatherTask.execute(location);
+    }
+
+    private void onLocationChanged()
+    {
+        updateWeather();
+        getLoaderManager().restartLoader(FORECAST_LOADER,null,this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        String location = Utility.getPreferredLocation(this);
+        String tempUnits = Utility.getPreferredUnits(this);
+        if(location!=null && !location.equals(mLocation))
+        {
+            onLocationChanged();
+            mLocation=location;
+        }
+        if(!tempUnits.equals(mTempUnit))
+        {
+            getLoaderManager().restartLoader(FORECAST_LOADER,null,this);
+        }
     }
 
     @Override

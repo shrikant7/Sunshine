@@ -22,10 +22,13 @@
             android:parentActivityName=".MainActivity"/>
         <activity android:name=".SettingsActivity"
             android:label="@string/settings_title"
+            android:theme="@android:style/Theme.Holo.Light.DarkActionBar"
             android:parentActivityName=".MainActivity"/>
         <provider
             android:authorities="com.example.user.sunshine"
-            android:name=".data.WeatherProvider" />
+            android:name=".data.WeatherProvider"
+            android:enabled="true"
+            android:exported="false"/>
     </application>
 
 </manifest>
