@@ -15,30 +15,6 @@ public class ForecastAdapter extends CursorAdapter {
         super(context, c, flags);
     }
 
-//    /**
-//     * Prepare the weather high/lows for presentation.
-//     */
-//    private String formatHighLows(double high, double low) {
-//        boolean isMetric = Utility.isMetric(mContext);
-//        String highLowStr = Utility.formatTemperature(high, isMetric) + "/" + Utility.formatTemperature(low, isMetric);
-//        return highLowStr;
-//    }
-//
-//    /*
-//        This is ported from FetchWeatherTask --- but now we go straight from the cursor to the
-//        string.
-//     */
-//    private String convertCursorRowToUXFormat(Cursor cursor) {
-//
-//        String highAndLow = formatHighLows(
-//                cursor.getDouble(MainActivity.COL_WEATHER_MAX_TEMP),
-//                cursor.getDouble(MainActivity.COL_WEATHER_MIN_TEMP));
-//
-//        return Utility.formatDate(cursor.getLong(MainActivity.COL_WEATHER_DATE)) +
-//                " - " + cursor.getString(MainActivity.COL_WEATHER_DESC) +
-//                " - " + highAndLow;
-//    }
-
     /*
      cache of the children views for a forecast list item.
      */
@@ -102,10 +78,20 @@ public class ForecastAdapter extends CursorAdapter {
         ViewHolder holder = (ViewHolder) view.getTag();
 
         // Read weather icon ID from cursor
-        int weatherId = cursor.getInt(MainActivity.COL_WEATHER_ID);
-        // Use placeholder image for now
-        holder.iconView.setImageResource(R.drawable.ic_launcher);
-
+        int weatherId = cursor.getInt(MainActivity.COL_WEATHER_CONDITION_ID);
+        // choose weather condition image
+        int viewType = getItemViewType(cursor.getPosition());
+        switch (viewType)
+        {
+            case VIEW_TYPE_TODAY:
+                //Get weather icon.
+                holder.iconView.setImageResource(Utility.getArtResourceForWeatherCondition(weatherId));
+                break;
+            case VIEW_TYPE_FUTURE_DAY:
+                //Get weather icon;
+                holder.iconView.setImageResource(Utility.getIconResourceForWeatherCondition(weatherId));
+                break;
+        }
         // Read date from cursor
         long dateInMillis = cursor.getLong(MainActivity.COL_WEATHER_DATE);
         // Find TextView and set formatted date on it

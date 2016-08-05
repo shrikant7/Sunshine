@@ -167,7 +167,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
                 // The date/time is returned as a long.  We need to convert that
                 // into something human-readable, since most people won't read "1467007200" as
                 // "this monday".
-                dateTime = dayForecast.getLong(OWM_DATE);
+                dateTime = dayForecast.getLong(OWM_DATE)*1000L;
 
                 pressure = dayForecast.getDouble(OWM_PRESSURE);
                 humidity = dayForecast.getInt(OWM_HUMIDITY);
